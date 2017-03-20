@@ -1,5 +1,11 @@
 package utilities;
 
+import java.awt.AWTException;
+import java.awt.Robot;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.KeyEvent;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
@@ -14,7 +20,8 @@ import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
- * The {@link WhatsAppDriver} class is and API for taking actions in the WhatsApp Web client. 
+ * The {@link WhatsAppDriver} class is and API for taking actions in the
+ * WhatsApp Web client.
  * 
  * @author Asaf Karavani
  *
@@ -22,13 +29,16 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class WhatsAppDriver {
 
 	WebDriver driver;
-	Wait<WebDriver> wait;
-	
+	Wait<WebDriver> longWait;
+	Wait<WebDriver> shortWait;
 	boolean connected;
 
 	/**
 	 * 
-	 * @param browser takes a {@link Browser} Enumeration to determine which browser to use (e.g. {@link Browser.CHROME}, {@link Browser.FIREFOX}, {@link Browser.PHANTOMJS}, etc.)
+	 * @param browser
+	 *            takes a {@link Browser} Enumeration to determine which browser
+	 *            to use (e.g. {@link Browser.CHROME}, {@link Browser.FIREFOX},
+	 *            {@link Browser.PHANTOMJS}, etc.)
 	 */
 	public WhatsAppDriver(Browser browser) {
 		if (browser == Browser.CHROME) {
@@ -41,12 +51,13 @@ public class WhatsAppDriver {
 			// Default Browser
 			driver = new ChromeDriver();
 		}
-		
-		wait = new WebDriverWait(driver, 30);
+
+		longWait = new WebDriverWait(driver, 30);
+		shortWait = new WebDriverWait(driver, 3);
 
 		connected = false;
 	}
-	
+
 	/**
 	 * Will open the WhatApp Web client.
 	 */
@@ -54,75 +65,93 @@ public class WhatsAppDriver {
 		driver.get("https://web.whatsapp.com/");
 
 	}
-	
+
 	public void close() {
 		driver.close();
-		
+
 	}
-	
+
 	public void quit() {
 		driver.quit();
 
 	}
-	
+
 	public void openConvWith(String contactName) {
 		WebElement searchBar = driver.findElement(By.cssSelector(".input.input-search"));
 		searchBar.sendKeys(contactName);
-		
+
 		try {
 			TimeUnit.SECONDS.sleep(1);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		
-		wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".icon.icon-x-alt")));
-		WebElement conv = driver.findElement(By.cssSelector("#pane-side > div > div > div > div:nth-child(2)"));
+
+		longWait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".icon.icon-x-alt")));
+		WebElement conv = driver.findElement(By.xpath("//*[@id=\"pane-side\"]/div[1]/div/div/div[1]"));
 		conv.click();
-		
+
 		try {
-			wait.until(ExpectedConditions.presenceOfElementLocated(By.className("incoming-msgs")));
+			shortWait.until(ExpectedConditions.presenceOfElementLocated(By.className("incoming-msgs")));
 			driver.findElement(By.className("incoming-msgs")).click();
 		} catch (Exception e) {
 			System.out.println("Can't find Scrolldown button.");
 		}
-		
+
 	}
-	
-	public void waitForConnection() throws TimeoutException{
+
+	public void waitForConnection() throws TimeoutException {
 		try {
-			wait.until(ExpectedConditions.presenceOfElementLocated(By.className("intro-title")));
-			//TimeUnit.SECONDS.sleep(3);
+			longWait.until(ExpectedConditions.presenceOfElementLocated(By.className("intro-title")));
+			// TimeUnit.SECONDS.sleep(3);
 			connected = true;
 			System.out.println("Connected.");
-			
-		} catch (TimeoutException t) {		
+
+		} catch (TimeoutException t) {
 			connected = false;
 			throw t;
 		}
-		
-		
+
 	}
-	
+
 	public String getCurrentConvImg() {
 		By byConvImg = By.xpath("//*[@id=\"main\"]/header/div[1]/div/div/img");
 		WebElement img = driver.findElement(byConvImg);
 		return img.getAttribute("src").replaceFirst("t=s", "t=l");
 
 	}
-	
+
 	public String getCurrentConvName() {
-		
+
 		WebElement chatHeader = driver.findElement(By.cssSelector(".pane-header.pane-chat-header"));
 		WebElement title = chatHeader.findElement(By.className("chat-title"));
 		WebElement titleText = title.findElement(By.cssSelector(".emojitext.ellipsify"));
 		return titleText.getAttribute("title");
 
 	}
-	
+
 	public void sendMsg(String msg) {
-		
-		
+		try {
+			Robot robot = new Robot();
+
+			WebElement input = driver.findElement(By.className("input-container"));
+			input.click();
+			
+			StringSelection stringSelection = new StringSelection(msg);
+			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+			clipboard.setContents(stringSelection, stringSelection);
+
+			robot.keyPress(KeyEvent.VK_CONTROL);
+			robot.keyPress(KeyEvent.VK_V);
+			robot.keyRelease(KeyEvent.VK_V);
+			robot.keyRelease(KeyEvent.VK_CONTROL);
+			
+			robot.keyPress(KeyEvent.VK_ENTER);
+			robot.keyRelease(KeyEvent.VK_ENTER);
+
+		} catch (AWTException e) {
+			e.printStackTrace();
+		}
+
 	}
-	
-	
+
 }
