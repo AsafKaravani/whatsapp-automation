@@ -31,9 +31,8 @@ public class App {
 
 			System.out.println(whatsapp.getCurrentConvName());
 			
-			for (int i = 0; i < 100; i++) {
-				whatsapp.sendMsg("DDoS");
-			}
+			whatsapp.getVisableMessages();
+			
 
 //			whatsapp.sendMsg("❤❤❤❤❤\n🖤🖤❤🖤🖤\n🖤🖤❤🖤🖤\n🖤🖤❤🖤🖤\n❤❤❤❤❤");
 //			

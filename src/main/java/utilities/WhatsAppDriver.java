@@ -6,6 +6,8 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
@@ -152,6 +154,25 @@ public class WhatsAppDriver {
 			e.printStackTrace();
 		}
 
+	}
+	
+	public List<Message> getVisableMessages() {
+		List<WebElement> messagesWithHeader = driver.findElements(By.cssSelector(".has-author"));
+		List<WebElement> headers = new ArrayList<WebElement>();
+		
+		for (WebElement msg : messagesWithHeader) {
+			WebElement header = msg.findElement(By.cssSelector(".message-author")).findElement(By.cssSelector(".text-clickable"));
+			headers.add(header);
+		}
+
+		for (WebElement webElement : headers) {
+			System.out.println(webElement.getText());
+		}	
+		
+		
+		headers.get(0).click();
+		
+		return null;
 	}
 
 }
