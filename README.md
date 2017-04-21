@@ -29,3 +29,5 @@ whatsapp.getCurrentConvName();
 whatsapp.getVisableMessages();
 whatsapp.sendMsg("Some text");
 ```
+
+## P.S. - This project is based on [Selenium](http://www.seleniumhq.org/).
