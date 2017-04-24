@@ -25,13 +25,8 @@ public class App {
 				e.printStackTrace();
 			}
 			
-			whatsapp.openConvWith("עד מתי 2014");
-
-			System.out.println(whatsapp.getCurrentConvImg());
-
-			System.out.println(whatsapp.getCurrentConvName());
 			
-			whatsapp.getVisableMessages();
+			whatsapp.getNewMessageChat().click();
 			
 
 //			whatsapp.sendMsg("❤❤❤❤❤\n🖤🖤❤🖤🖤\n🖤🖤❤🖤🖤\n🖤🖤❤🖤🖤\n❤❤❤❤❤");

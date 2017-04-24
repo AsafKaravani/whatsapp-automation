@@ -8,6 +8,7 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
@@ -156,7 +157,7 @@ public class WhatsAppDriver {
 
 	}
 	
-	public List<Message> getVisableMessages() {
+	public List<WebElement> getVisableMessages() {
 		List<WebElement> messagesWithHeader = driver.findElements(By.cssSelector(".has-author"));
 		List<WebElement> headers = new ArrayList<WebElement>();
 		
@@ -164,15 +165,20 @@ public class WhatsAppDriver {
 			WebElement header = msg.findElement(By.cssSelector(".message-author")).findElement(By.cssSelector(".text-clickable"));
 			headers.add(header);
 		}
+		
+		return headers;
+	}
+	
+	public WebElement getNewMessageChat() {
+		try {
+			WebElement newMsgNotification = driver.findElement(By.cssSelector(".icon-meta.unread-count"));
+			WebElement chatImg = newMsgNotification.findElement(By.xpath("./../../../../../../.."));	
+			return chatImg;
+		} catch (Exception e) {
+			System.out.println("No new messages.");
+			return null;
+		}
 
-		for (WebElement webElement : headers) {
-			System.out.println(webElement.getText());
-		}	
-		
-		
-		headers.get(0).click();
-		
-		return null;
 	}
 
 }
