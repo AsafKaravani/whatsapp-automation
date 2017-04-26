@@ -1,16 +1,35 @@
 package boot;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.WebElement;
 
 public class SingleConversationBehavior extends WhatsAppBehaviors {
 	
-	List<String> contactNames = Arrays.asList("עד מתי 2014","ספוש","אדמי - כדי שנפסיק להתבלבל");
-	int i = 0;
+	//the list of contacts we want to get their image
+	List<String> contactNames;
+	//save name with images
+	Map<String, String> namesWithImageMap;
 	
+	int i;
+	
+	/*
+	 * CTOR - initialize the global params
+	 */
+	public SingleConversationBehavior(){
+		namesWithImageMap = new HashMap<String, String>();
+		contactNames = Arrays.asList("עד מתי 2014","גיא גולן");
+		i = 0;
+	}
+	/*
+	 * (non-Javadoc)
+	 * @see boot.WhatsAppBehaviors#start()
+	 * gets a connection, see if there is a new message, if true, take the image  else send message to the next ccontact in the list
+	 */
 	@Override
 	public void start(){
 		super.start();
@@ -20,7 +39,11 @@ public class SingleConversationBehavior extends WhatsAppBehaviors {
 			if(answer != null){
 				answer.click();
 				String answerImage = whatsapp.getCurrentConvImg();
-				System.out.println("answerImage==="+answerImage);
+				if(!answerImage.startsWith("data")){
+					String msgName = whatsapp.getCurrentConvName();
+					if(namesWithImageMap.get(msgName) == null)
+						namesWithImageMap.put(msgName, answerImage);
+				}
 			}else{
 				openConversation();
 			}
@@ -32,27 +55,40 @@ public class SingleConversationBehavior extends WhatsAppBehaviors {
 			}
 		}
 	}
-	
+	/*
+	 * (non-Javadoc)
+	 * @see boot.WhatsAppBehaviors#openConversation()
+	 * open new conversation with a contact from the list, if he already has an image - take and save it else send message
+	 */
 	@Override
 	public void openConversation() {
 		if(i < contactNames.size()){
-			System.out.println("contactNames.get(i)="+contactNames.get(i));
 			whatsapp.openConvWith(contactNames.get(i));
-			sendMessage();
+			String img = whatsapp.getCurrentConvImg();
+			if(!img.startsWith("data")){
+				namesWithImageMap.put(contactNames.get(i), img);
+			}else sendMessage();
 			i++;
 		}
 	}
-
+	/*
+	 * (non-Javadoc)
+	 * @see boot.WhatsAppBehaviors#sendMessage()
+	 * send message to the current open conversation
+	 */
 	@Override
 	public void sendMessage() {
 		whatsapp.sendMsg("TEST");
 	}
-
+	/*
+	 * (non-Javadoc)
+	 * @see boot.WhatsAppBehaviors#getAnswer()
+	 * checks if there is new message
+	 */
 	@Override
 	public WebElement getAnswer() {
-		// TODO Auto-generated method stub
-		WebElement answer = whatsapp.getNewMessageChat();
-		return answer;
+		return whatsapp.getNewMessageChat();
+		
 	}
 
 }

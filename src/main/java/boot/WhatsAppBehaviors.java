@@ -9,9 +9,16 @@ import utilities.Browser;
 import utilities.WhatsAppDriver;
 
 public abstract class WhatsAppBehaviors {
-	
+	//driver
 	public WhatsAppDriver whatsapp;
 	
+	/**
+	 * @author Yuval
+	 * @param none
+	 * <br>
+	 * <b>Desctiption: </b><br>
+	 * starts the driver and waits for connection
+	 */
 	public void start(){
 		whatsapp = new WhatsAppDriver(Browser.CHROME);
 		whatsapp.open();
