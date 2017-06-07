@@ -81,6 +81,7 @@ public class WhatsAppDriver {
 
 	public void openConvWith(String contactName) {
 		WebElement searchBar = driver.findElement(By.cssSelector(".input.input-search"));
+		searchBar.clear();
 		searchBar.sendKeys(contactName);
 
 		try {
