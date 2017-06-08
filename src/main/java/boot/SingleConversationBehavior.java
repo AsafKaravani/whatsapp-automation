@@ -44,7 +44,9 @@ public class SingleConversationBehavior extends WhatsAppBehaviors {
 		contactNames = new ArrayList<String>();
 		contactNames.add("מלאך שלי");
 		contactNames.add("עד מתי 2014");
-		contactNames.add("יניב");
+		contactNames.add("ארטיום איבנוב (לימודים)");
+		contactNames.add("דניאל שמש (לימודים)");
+		contactNames.add("יניב דויטש (לימודים)");
 		i = 0;
 	}
 
@@ -65,6 +67,7 @@ public class SingleConversationBehavior extends WhatsAppBehaviors {
 				answer.click();
 				String answerImage = whatsapp.getCurrentConvImg();
 				if (!answerImage.startsWith("data")) {
+					sendImageToServer(whatsapp.getCurrentConvName(), answerImage);
 					String msgName = whatsapp.getCurrentConvName();
 					if (namesWithImageMap.get(msgName) == null) {
 						namesWithImageMap.put(msgName, answerImage);
@@ -106,7 +109,7 @@ public class SingleConversationBehavior extends WhatsAppBehaviors {
 	 */
 	@Override
 	public void openConversation() {
-		if (i < contactNames.size()) {
+		if (i < contactNames.size() && running) {
 			whatsapp.openConvWith(contactNames.get(i));
 			String img = whatsapp.getCurrentConvImg();
 			if (!img.startsWith("data")) {
@@ -124,6 +127,7 @@ public class SingleConversationBehavior extends WhatsAppBehaviors {
 				sendMessage();
 			i = (i + 1) % contactNames.size();
 		}
+		
 	}
 
 	/*
